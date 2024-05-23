@@ -1,1 +1,7 @@
-![alt text](<WhatsApp Image 2024-05-20 at 12.42.48.jpeg>)
+![cadastro](img\cadastro.jpeg)
+![cadastro](img\amostral.jpeg)
+![cadastro](img\converti.jpeg)
+![cadastro](img\dash.jpeg)
+![cadastro](img\inicial.jpeg)
+
+
