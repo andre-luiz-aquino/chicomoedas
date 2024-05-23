@@ -1,7 +1,7 @@
-![cadastro](img\cadastro.jpeg)
-![cadastro](img\amostral.jpeg)
-![cadastro](img\converti.jpeg)
-![cadastro](img\dash.jpeg)
-![cadastro](img\inicial.jpeg)
+![alt](img\cadastro.jpeg)
+![alt](img\amostral.jpeg)
+![alt](img\converti.jpeg)
+![alt](img\dash.jpeg)
+![alt](img\inicial.jpeg)
 
 
