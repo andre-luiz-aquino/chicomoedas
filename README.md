@@ -1,7 +1,2 @@
-![alt](img\cadastro.jpeg)
-![alt](img\amostral.jpeg)
-![alt](img\converti.jpeg)
-![alt](img\dash.jpeg)
-![alt](img\inicial.jpeg)
-
-
+## Link Documentação:
+[chicomoedas.com](https://docs.google.com/document/d/1lib0fNVb99Jqf09HwvgoJilDO-NkkHy6RlJDz7yx0O0/edit?usp=sharing)
