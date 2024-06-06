@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "bodyfigmas" "\0"
+            VALUE "FileDescription", "chicomoedas" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "bodyfigmas" "\0"
+            VALUE "InternalName", "chicomoedas" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "bodyfigmas.exe" "\0"
-            VALUE "ProductName", "bodyfigmas" "\0"
+            VALUE "OriginalFilename", "chicomoedas.exe" "\0"
+            VALUE "ProductName", "chicomoedas" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
