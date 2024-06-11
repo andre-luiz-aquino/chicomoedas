@@ -1,7 +1,7 @@
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
 import 'package:chicomoedas/views/login_page.dart';
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CadastroPage extends StatefulWidget {

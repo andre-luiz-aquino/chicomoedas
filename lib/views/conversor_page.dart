@@ -72,174 +72,176 @@ class _ConversorPageState extends State<ConversorPage> {
               ),
             ],
           ),
-          body: Stack(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 300.w,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 30),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.r),
-                            borderSide: const BorderSide(color: Colors.grey),
+          body: SingleChildScrollView(
+            child: Stack(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 750.h, // Altura da tela original do design
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 300.w,
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 30),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25.r),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(vertical: 20.h),
+                            hintText: 'VALOR',
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 20.h),
-                          hintText: 'VALOR',
                         ),
                       ),
-                    ),
-                    Image.asset('assets/iconTransicao.png', height: 100.h),
-                    SizedBox(
-                      width: 300.w,
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 30),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.r),
-                            borderSide: const BorderSide(color: Colors.grey),
+                      Image.asset('assets/iconTransicao.png', height: 100.h),
+                      SizedBox(
+                        width: 300.w,
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 30),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25.r),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(vertical: 20.h),
+                            hintText: 'VALOR',
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 20.h),
-                          hintText: 'VALOR',
                         ),
                       ),
+                      SizedBox(height: 20.h),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF323232),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 110.w,
+                            vertical: 10.h,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Calcular',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF323232),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 100.w,
+                            vertical: 10.h,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Criar Alerta',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 190.h,
+                  left: 10.w,
+                  child: Container(
+                    width: 60.w,
+                    height: 60.h,
+                    padding: EdgeInsets.all(2.5.w),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
                     ),
-                    SizedBox(height: 20.h),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF323232),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 110.w,
-                          vertical: 10.h,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.r),
-                        ),
-                      ),
+                    child: CircleAvatar(
+                      radius: 40.r,
+                      backgroundImage: const AssetImage("assets/br.png"),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 190.h,
+                  left: 305.w,
+                  child: Container(
+                    width: 60.w,
+                    height: 60.h,
+                    padding: EdgeInsets.all(2.5.w),
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
                       child: Text(
-                        'Calcular',
+                        'BRL',
                         style: TextStyle(
-                          fontSize: 20.sp,
                           color: Colors.white,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(height: 10.h),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF323232),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 100.w,
-                          vertical: 10.h,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.r),
-                        ),
-                      ),
+                  ),
+                ),
+                Positioned(
+                  top: 370.h,
+                  left: 10.w,
+                  child: Container(
+                    width: 60.w,
+                    height: 60.h,
+                    padding: EdgeInsets.all(2.5.w),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      radius: 40.r,
+                      backgroundImage: const AssetImage("assets/usa.png"),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 370.h,
+                  left: 305.w,
+                  child: Container(
+                    width: 60.w,
+                    height: 60.h,
+                    padding: EdgeInsets.all(2.5.w),
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
                       child: Text(
-                        'Criar Alerta',
+                        'USD',
                         style: TextStyle(
-                          fontSize: 20.sp,
                           color: Colors.white,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 185.h,
-                left: 10.w,
-                child: Container(
-                  width: 60.w,
-                  height: 60.h,
-                  padding: EdgeInsets.all(2.5.w),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    radius: 40.r,
-                    backgroundImage: const AssetImage("assets/br.png"),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 185.h,
-                left: 305.w,
-                child: Container(
-                  width: 60.w,
-                  height: 60.h,
-                  padding: EdgeInsets.all(2.5.w),
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      'BRL',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 365.h,
-                left: 10.w,
-                child: Container(
-                  width: 60.w,
-                  height: 60.h,
-                  padding: EdgeInsets.all(2.5.w),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    radius: 40.r,
-                    backgroundImage: const AssetImage("assets/usa.png"),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 365.h,
-                left: 305.w,
-                child: Container(
-                  width: 60.w,
-                  height: 60.h,
-                  padding: EdgeInsets.all(2.5.w),
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      'USD',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           drawer: Drawer(
             child: ListView(
