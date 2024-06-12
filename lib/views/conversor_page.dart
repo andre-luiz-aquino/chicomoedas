@@ -1,8 +1,11 @@
+import 'package:chicomoedas/conversao/currency_converter.dart';
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
+import 'package:chicomoedas/format/input_format.dart';
 import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 
 class ConversorPage extends StatefulWidget {
   const ConversorPage({super.key});
@@ -12,9 +15,25 @@ class ConversorPage extends StatefulWidget {
 }
 
 class _ConversorPageState extends State<ConversorPage> {
+  final TextEditingController _valueController = TextEditingController();
+  double? _exchangeRate;
+  double? _convertedValue;
+
   @override
   void initState() {
     super.initState();
+    _fetchExchangeRate();
+  }
+
+  Future<void> _fetchExchangeRate() async {
+    try {
+      final rate = await CurrencyConverter().getExchangeRate('BRL', 'USD');
+      setState(() {
+        _exchangeRate = rate;
+      });
+    } catch (error) {
+      print('Failed to fetch exchange rate: $error');
+    }
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -30,6 +49,15 @@ class _ConversorPageState extends State<ConversorPage> {
       MaterialPageRoute(builder: (context) => const LoginPage()),
       (Route<dynamic> route) => false,
     );
+  }
+
+  void _calculateConversion() {
+    final value = double.tryParse(_valueController.text);
+    if (value != null && _exchangeRate != null) {
+      setState(() {
+        _convertedValue = value * _exchangeRate!;
+      });
+    }
   }
 
   @override
@@ -77,7 +105,7 @@ class _ConversorPageState extends State<ConversorPage> {
               children: [
                 SizedBox(
                   width: double.infinity,
-                  height: 750.h, // Altura da tela original do design
+                  height: 750.h,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -85,8 +113,16 @@ class _ConversorPageState extends State<ConversorPage> {
                       SizedBox(
                         width: 300.w,
                         child: TextFormField(
+                          controller: _valueController,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 30),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.,]')),
+                            DecimalTextInputFormatter(),
+                          ],
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -94,7 +130,8 @@ class _ConversorPageState extends State<ConversorPage> {
                               borderRadius: BorderRadius.circular(25.r),
                               borderSide: const BorderSide(color: Colors.grey),
                             ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 20.h),
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 20.h),
                             hintText: 'VALOR',
                           ),
                         ),
@@ -105,6 +142,7 @@ class _ConversorPageState extends State<ConversorPage> {
                         child: TextFormField(
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 30),
+                          readOnly: true,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -112,14 +150,16 @@ class _ConversorPageState extends State<ConversorPage> {
                               borderRadius: BorderRadius.circular(25.r),
                               borderSide: const BorderSide(color: Colors.grey),
                             ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 20.h),
-                            hintText: 'VALOR',
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 20.h),
+                            hintText:
+                                _convertedValue?.toStringAsFixed(2) ?? 'VALOR',
                           ),
                         ),
                       ),
                       SizedBox(height: 20.h),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: _calculateConversion,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF323232),
                           padding: EdgeInsets.symmetric(
