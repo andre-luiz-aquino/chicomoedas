@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chicomoedas/conversao/currency_converter.dart';
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
@@ -19,6 +21,19 @@ class _ConversorPageState extends State<ConversorPage> {
   double? _exchangeRate;
   double? _convertedValue;
 
+  String _selectedCurrency = 'USD';
+  bool _isFetching = false;
+
+  final List<Map<String, String>> _currencies = [
+    {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
+    {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
+    {
+      'code': 'ARS',
+      'name': 'Pesos Argentinos',
+      'image': 'assets/argentina.jpeg'
+    }
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -26,13 +41,21 @@ class _ConversorPageState extends State<ConversorPage> {
   }
 
   Future<void> _fetchExchangeRate() async {
+    setState(() {
+      _isFetching = true;
+    });
     try {
-      final rate = await CurrencyConverter().getExchangeRate('BRL', 'USD');
+      final rate =
+          await CurrencyConverter().getExchangeRate('BRL', _selectedCurrency);
       setState(() {
         _exchangeRate = rate;
       });
     } catch (error) {
-      print('Failed to fetch exchange rate: $error');
+      log('Failed to fetch exchange rate: $error');
+    } finally {
+      setState(() {
+        _isFetching = false;
+      });
     }
   }
 
@@ -52,7 +75,7 @@ class _ConversorPageState extends State<ConversorPage> {
   }
 
   void _calculateConversion() {
-    final value = double.tryParse(_valueController.text);
+    final value = double.tryParse(_valueController.text.replaceAll(',', '.'));
     if (value != null && _exchangeRate != null) {
       setState(() {
         _convertedValue = value * _exchangeRate!;
@@ -163,9 +186,7 @@ class _ConversorPageState extends State<ConversorPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF323232),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 110.w,
-                            vertical: 10.h,
-                          ),
+                              horizontal: 110.w, vertical: 10.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25.r),
                           ),
@@ -184,9 +205,7 @@ class _ConversorPageState extends State<ConversorPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF323232),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 100.w,
-                            vertical: 10.h,
-                          ),
+                              horizontal: 100.w, vertical: 10.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25.r),
                           ),
@@ -242,18 +261,50 @@ class _ConversorPageState extends State<ConversorPage> {
                   ),
                 ),
                 Positioned(
-                  top: 370.h,
+                  top: 365.h,
                   left: 10.w,
                   child: Container(
-                    width: 60.w,
-                    height: 60.h,
-                    padding: EdgeInsets.all(2.5.w),
+                    width: 80.w,
+                    height: 80.h,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: CircleAvatar(
-                      radius: 40.r,
-                      backgroundImage: const AssetImage("assets/usa.png"),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedCurrency,
+                        icon:
+                            const Icon(Icons.arrow_downward, color: Colors.red),
+                        iconSize: 0,
+                        elevation: 16,
+                        dropdownColor: Colors.transparent,
+                        onChanged: (String? newValue) async {
+                          setState(() {
+                            _selectedCurrency = newValue!;
+                            _exchangeRate = null; // Limpar taxa de câmbio atual
+                            _convertedValue =
+                                null; // Limpar valor convertido atual
+                          });
+                          await _fetchExchangeRate(); // Buscar a nova taxa de câmbio
+                          _calculateConversion(); // Recalcular a conversão com base na nova taxa
+                        },
+                        items: _currencies.map<DropdownMenuItem<String>>(
+                            (Map<String, String> currency) {
+                          return DropdownMenuItem<String>(
+                            value: currency['code'],
+                            child: Row(
+                              children: [
+                                ClipOval(
+                                  child: Image.asset(
+                                    currency['image']!,
+                                    width: 50.w,
+                                    height: 50.h,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
@@ -270,7 +321,8 @@ class _ConversorPageState extends State<ConversorPage> {
                     ),
                     child: Center(
                       child: Text(
-                        'USD',
+                        _currencies.firstWhere((currency) =>
+                            currency['code'] == _selectedCurrency)['code']!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14.sp,
