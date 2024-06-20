@@ -2,10 +2,10 @@ import 'package:chicomoedas/dto/usuario_dto.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
-  factory DatabaseHelper() => _instance;
-  DatabaseHelper._internal();
+class DatabaseUser {
+  static final DatabaseUser _instance = DatabaseUser._internal();
+  factory DatabaseUser() => _instance;
+  DatabaseUser._internal();
 
   static Database? _database;
 

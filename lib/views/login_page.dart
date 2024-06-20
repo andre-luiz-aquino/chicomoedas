@@ -14,7 +14,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final DatabaseHelper dbHelper = DatabaseHelper();
+  final DatabaseUser dbHelper = DatabaseUser();
 
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();

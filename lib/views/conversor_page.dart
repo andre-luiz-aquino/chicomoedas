@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:chicomoedas/conversao/currency_converter.dart';
+import 'package:chicomoedas/dataBase/historico_db.dart';
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
 import 'package:chicomoedas/format/input_format.dart';
+import 'package:chicomoedas/views/historico_page.dart';
 import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,6 +19,8 @@ class ConversorPage extends StatefulWidget {
 }
 
 class _ConversorPageState extends State<ConversorPage> {
+  final dbHelper = DatabaseHelper();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _valueController = TextEditingController();
   double? _exchangeRate;
   double? _convertedValue;
@@ -37,10 +41,10 @@ class _ConversorPageState extends State<ConversorPage> {
   @override
   void initState() {
     super.initState();
-    _fetchExchangeRate();
+    _buscarTaxaCambio();
   }
 
-  Future<void> _fetchExchangeRate() async {
+  Future<void> _buscarTaxaCambio() async {
     setState(() {
       _isFetching = true;
     });
@@ -51,7 +55,7 @@ class _ConversorPageState extends State<ConversorPage> {
         _exchangeRate = rate;
       });
     } catch (error) {
-      log('Failed to fetch exchange rate: $error');
+      log('Falha ao buscar taxa de câmbio: $error');
     } finally {
       setState(() {
         _isFetching = false;
@@ -60,7 +64,7 @@ class _ConversorPageState extends State<ConversorPage> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    final dbHelper = DatabaseHelper();
+    final dbHelper = DatabaseUser();
     Usuario? usuarioLogado = await dbHelper.getLogado();
 
     if (usuarioLogado != null) {
@@ -74,12 +78,14 @@ class _ConversorPageState extends State<ConversorPage> {
     );
   }
 
-  void _calculateConversion() {
+  void _calcularConversao() {
     final value = double.tryParse(_valueController.text.replaceAll(',', '.'));
     if (value != null && _exchangeRate != null) {
       setState(() {
         _convertedValue = value * _exchangeRate!;
       });
+
+      dbHelper.insertHistorico(value, _selectedCurrency);
     }
   }
 
@@ -89,6 +95,7 @@ class _ConversorPageState extends State<ConversorPage> {
       designSize: const Size(375, 812),
       builder: (context, child) => SafeArea(
         child: Scaffold(
+          key: _scaffoldKey,
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -100,7 +107,9 @@ class _ConversorPageState extends State<ConversorPage> {
                 height: 33.sp,
                 fit: BoxFit.fill,
               ),
-              onPressed: () {},
+              onPressed: () {
+                _scaffoldKey.currentState!.openDrawer();
+              },
             ),
             title: Text(
               'Conversor',
@@ -182,7 +191,7 @@ class _ConversorPageState extends State<ConversorPage> {
                       ),
                       SizedBox(height: 20.h),
                       ElevatedButton(
-                        onPressed: _calculateConversion,
+                        onPressed: _calcularConversao,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF323232),
                           padding: EdgeInsets.symmetric(
@@ -280,12 +289,11 @@ class _ConversorPageState extends State<ConversorPage> {
                         onChanged: (String? newValue) async {
                           setState(() {
                             _selectedCurrency = newValue!;
-                            _exchangeRate = null; // Limpar taxa de câmbio atual
-                            _convertedValue =
-                                null; // Limpar valor convertido atual
+                            _exchangeRate = null;
+                            _convertedValue = null;
                           });
-                          await _fetchExchangeRate(); // Buscar a nova taxa de câmbio
-                          _calculateConversion(); // Recalcular a conversão com base na nova taxa
+                          await _buscarTaxaCambio();
+                          _calcularConversao();
                         },
                         items: _currencies.map<DropdownMenuItem<String>>(
                             (Map<String, String> currency) {
@@ -340,15 +348,36 @@ class _ConversorPageState extends State<ConversorPage> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 ListTile(
-                  title: const Text('Item 1'),
+                  title: const Text('Conversor'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (ModalRoute.of(context)?.settings.name != '/') {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ConversorPage(),
+                          settings: const RouteSettings(name: '/'),
+                        ),
+                            (Route<dynamic> route) => false,
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
                 ListTile(
-                  title: const Text('Item 2'),
+                  title: const Text('Histórico'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (ModalRoute.of(context)?.settings.name != '/historico') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoPage(),
+                          settings: const RouteSettings(name: '/historico'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ],

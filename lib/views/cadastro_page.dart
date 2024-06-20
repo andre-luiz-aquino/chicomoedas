@@ -13,7 +13,7 @@ class CadastroPage extends StatefulWidget {
 
 class _CadastroPageState extends State<CadastroPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final DatabaseHelper dbHelper = DatabaseHelper();
+  final DatabaseUser dbHelper = DatabaseUser();
 
   final TextEditingController _nomeUsuarioController = TextEditingController();
   final TextEditingController _nomeCompletoController = TextEditingController();
