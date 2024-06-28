@@ -5,6 +5,7 @@ import 'package:chicomoedas/dataBase/historico_db.dart';
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
 import 'package:chicomoedas/format/input_format.dart';
+import 'package:chicomoedas/views/historico_cotacao.dart';
 import 'package:chicomoedas/views/historico_page.dart';
 import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
@@ -373,6 +374,22 @@ class _ConversorPageState extends State<ConversorPage> {
                         MaterialPageRoute(
                           builder: (context) => const HistoricoPage(),
                           settings: const RouteSettings(name: '/historico'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                ListTile(
+                  title: const Text('Histórico de Cotação'),
+                  onTap: () {
+                    if (ModalRoute.of(context)?.settings.name != '/historico_cotacao') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoCotacao(),
+                          settings: const RouteSettings(name: '/historico_cotacao'),
                         ),
                       );
                     } else {
