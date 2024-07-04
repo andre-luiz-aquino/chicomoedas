@@ -1,12 +1,11 @@
 import 'dart:convert';
 
+import 'package:chicomoedas/views/conversor_page.dart';
+import 'package:chicomoedas/views/historico_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
-
-import 'conversor_page.dart';
-import 'historico_page.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HistoricoCotacao extends StatefulWidget {
   const HistoricoCotacao({Key? key}) : super(key: key);
@@ -15,18 +14,17 @@ class HistoricoCotacao extends StatefulWidget {
   State<HistoricoCotacao> createState() => _HistoricoCotacaoState();
 }
 
+class CotacaoData {
+  final DateTime data;
+  final double valor;
+
+  CotacaoData(this.data, this.valor);
+}
+
 class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _selectedCurrency = 'USD';
-  final List<Map<String, String>> _currencies = [
-    {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
-    {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
-    {'code': 'ARS', 'name': 'Pesos Argentinos', 'image': 'assets/argentina.jpeg'}
-  ];
-
-  // Dados fictícios para o gráfico de linhas (valores do dólar)
-  List<double> _dolarValues = [];
+  List<CotacaoData> _dolarValues = [];
 
   @override
   void initState() {
@@ -35,27 +33,25 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   }
 
   Future<void> _fetchAndSetCurrencyValues() async {
-    // Exemplo para buscar valores do dólar
-    List<double> values = await fetchCurrencyValues('USD');
+    List<CotacaoData> values = await fetchCurrencyValues();
     setState(() {
       _dolarValues = values;
     });
   }
 
-  Future<List<double>> fetchCurrencyValues(String currencyCode) async {
-    String apiUrl = 'https://api.exchangerate-api.com/v4/latest/$currencyCode';
-    List<double> values = [];
+  Future<List<CotacaoData>> fetchCurrencyValues() async {
+    String apiUrl = 'http://172.210.138.201:8000/items';
+    List<CotacaoData> values = [];
 
     try {
       var response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
-        // Parse a resposta JSON
-        var data = jsonDecode(response.body);
-        // Extrair os valores das cotações
-        var rates = data['rates'];
-        rates.forEach((key, value) {
-          values.add(value.toDouble());
-        });
+        var data = jsonDecode(response.body) as List<dynamic>;
+        values = data.map((item) {
+          double value = double.tryParse(item['valor'] ?? '0.0') ?? 0.0;
+          DateTime date = DateTime.parse(item['data']);
+          return CotacaoData(date, value);
+        }).toList();
       } else {
         throw Exception('Failed to load currency values');
       }
@@ -67,7 +63,18 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    // Lógica de logout aqui, se necessário
+    // Implemente sua lógica de logout aqui, se necessário
+  }
+
+  List<CartesianSeries<CotacaoData, DateTime>> _createChartData() {
+    return [
+      LineSeries<CotacaoData, DateTime>(
+        dataSource: _dolarValues,
+        xValueMapper: (CotacaoData data, _) => data.data,
+        yValueMapper: (CotacaoData data, _) => data.valor,
+        color: Colors.blue,
+      ),
+    ];
   }
 
   @override
@@ -125,135 +132,16 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
                     children: [
                       Padding(
                         padding: EdgeInsets.all(16.w),
-                        child: Container(
+                        child: SizedBox(
                           height: 300.h, // Altura definida para o gráfico
-                          child: LineChart(
-                            LineChartData(
-                              gridData: FlGridData(show: false),
-                              titlesData: FlTitlesData(show: false),
-                              borderData: FlBorderData(show: false),
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: _dolarValues
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
-                                    return FlSpot(entry.key.toDouble(), entry.value);
-                                  })
-                                      .toList(),
-                                  isCurved: true,
-                                  color: Colors.blue,
-                                  belowBarData: BarAreaData(show: false),
-                                ),
-                              ],
-                            ),
+                          child: SfCartesianChart(
+                            primaryXAxis: DateTimeAxis(),
+                            series: _createChartData(),
                           ),
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      Container(
-                        height: 100.h,
-                        width: 330.w,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _dolarValues.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '${_currencies[index]['name']}',
-                                    style: TextStyle(fontSize: 12.sp),
-                                  ),
-                                  SizedBox(height: 5.h),
-                                  Text(
-                                    '${_dolarValues[index].toStringAsFixed(2)}',
-                                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
                     ],
-                  ),
-                ),
-                Positioned(
-                  top: 100.h,
-                  left: 60.w,
-                  child: Container(
-                    width: 60.w,
-                    height: 60.h,
-                    padding: EdgeInsets.all(2.5.w),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: CircleAvatar(
-                      radius: 40.r,
-                      backgroundImage: AssetImage("assets/br.png"),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 100.h,
-                  left: 160.w,
-                  child: Container(
-                    width: 60.w,
-                    height: 60.h,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/iconTransicao.png',
-                        fit: BoxFit.cover, // Ajuste o fit conforme necessário
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 90.h,
-                  left: 260.w,
-                  child: Container(
-                    width: 80.w,
-                    height: 80.h,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedCurrency,
-                        icon: Icon(Icons.arrow_downward, color: Colors.white),
-                        iconSize: 24,
-                        elevation: 16,
-                        dropdownColor: Colors.white,
-                        onChanged: (String? newValue) async {
-                          setState(() {
-                            _selectedCurrency = newValue!;
-                            _fetchAndSetCurrencyValues(); // Atualiza os dados ao mudar a moeda
-                          });
-                        },
-                        items: _currencies.map((Map<String, String> currency) {
-                          return DropdownMenuItem<String>(
-                            value: currency['code'],
-                            child: Row(
-                              children: <Widget>[
-                                ClipOval(
-                                  child: Image.asset(
-                                    currency['image']!,
-                                    width: 30.w,
-                                    height: 30.h,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
                   ),
                 ),
               ],
@@ -264,14 +152,14 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 ListTile(
-                  title: Text('Conversor'),
+                  title: const Text('Conversor'),
                   onTap: () {
                     if (ModalRoute.of(context)?.settings.name != '/') {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ConversorPage(),
-                          settings: RouteSettings(name: '/'),
+                          settings: const RouteSettings(name: '/'),
                         ),
                             (Route<dynamic> route) => false,
                       );
@@ -281,14 +169,14 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
                   },
                 ),
                 ListTile(
-                  title: Text('Histórico'),
+                  title: const Text('Histórico'),
                   onTap: () {
                     if (ModalRoute.of(context)?.settings.name != '/historico') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const HistoricoPage(),
-                          settings: RouteSettings(name: '/historico'),
+                          settings: const RouteSettings(name: '/historico'),
                         ),
                       );
                     } else {
@@ -297,14 +185,14 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
                   },
                 ),
                 ListTile(
-                  title: Text('Histórico de Cotação'),
+                  title: const Text('Histórico de Cotação'),
                   onTap: () {
                     if (ModalRoute.of(context)?.settings.name != '/historico_cotacao') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const HistoricoCotacao(),
-                          settings: RouteSettings(name: '/historico_cotacao'),
+                          settings: const RouteSettings(name: '/historico_cotacao'),
                         ),
                       );
                     } else {

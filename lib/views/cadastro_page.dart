@@ -1,5 +1,8 @@
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/dto/usuario_dto.dart';
+import 'package:chicomoedas/views/conversor_page.dart';
+import 'package:chicomoedas/views/historico_cotacao.dart';
+import 'package:chicomoedas/views/historico_page.dart';
 import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -225,7 +228,7 @@ class _CadastroPageState extends State<CadastroPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF323232),
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 105.w,
+                                  horizontal: 100.w,
                                   vertical: 10.h,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -254,15 +257,52 @@ class _CadastroPageState extends State<CadastroPage> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 ListTile(
-                  title: const Text('Item 1'),
+                  title: const Text('Conversor'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (ModalRoute.of(context)?.settings.name != '/') {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ConversorPage(),
+                          settings: const RouteSettings(name: '/'),
+                        ),
+                            (Route<dynamic> route) => false,
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
                 ListTile(
-                  title: const Text('Item 2'),
+                  title: const Text('Histórico'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (ModalRoute.of(context)?.settings.name != '/historico') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoPage(),
+                          settings: const RouteSettings(name: '/historico'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                ListTile(
+                  title: const Text('Histórico de Cotação'),
+                  onTap: () {
+                    if (ModalRoute.of(context)?.settings.name != '/historico_cotacao') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoCotacao(),
+                          settings: const RouteSettings(name: '/historico_cotacao'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ],

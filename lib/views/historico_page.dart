@@ -1,6 +1,7 @@
 import 'package:chicomoedas/dataBase/historico_db.dart';
 import 'package:chicomoedas/dataBase/usuario_db.dart';
 import 'package:chicomoedas/views/conversor_page.dart';
+import 'package:chicomoedas/views/historico_cotacao.dart';
 import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,17 +19,30 @@ class HistoricoPage extends StatefulWidget {
 class _HistoricoPageState extends State<HistoricoPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Future<List<Map<String, dynamic>>> _historicoFuture;
+  String _nomeUsuario = '';
 
   @override
   void initState() {
     super.initState();
     _loadHistorico();
+    _loadUsuario();
   }
 
   Future<void> _loadHistorico() async {
     setState(() {
       _historicoFuture = DatabaseHelper().getHistorico();
     });
+  }
+
+  Future<void> _loadUsuario() async {
+    final dbHelper = DatabaseUser();
+    Usuario? usuarioLogado = await dbHelper.getLogado();
+
+    if (usuarioLogado != null) {
+      setState(() {
+        _nomeUsuario = usuarioLogado.nomeUsuario;
+      });
+    }
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -42,7 +56,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
-      (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
     );
   }
 
@@ -99,7 +113,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Erro ao carregar histórico'));
+                return const Center(child: Text('Erro ao carregar histórico'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text('Nenhum histórico disponível'));
               } else {
@@ -124,7 +138,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
                       },
                       child: ListTile(
                         title:
-                            Text('${item['valor']} BRL para ${item['moeda']}'),
+                        Text('${item['valor']} BRL para ${item['moeda']}'),
                         subtitle: Text(data),
                       ),
                     );
@@ -137,6 +151,18 @@ class _HistoricoPageState extends State<HistoricoPage> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: Text(
+                    'Bem-vindo, $_nomeUsuario!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.sp,
+                    ),
+                  ),
+                ),
                 ListTile(
                   title: const Text('Conversor'),
                   onTap: () {
@@ -147,7 +173,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
                           builder: (context) => const ConversorPage(),
                           settings: const RouteSettings(name: '/'),
                         ),
-                        (Route<dynamic> route) => false,
+                            (Route<dynamic> route) => false,
                       );
                     } else {
                       Navigator.pop(context);
@@ -157,7 +183,33 @@ class _HistoricoPageState extends State<HistoricoPage> {
                 ListTile(
                   title: const Text('Histórico'),
                   onTap: () {
-                    Navigator.pop(context);
+                    if (ModalRoute.of(context)?.settings.name != '/historico') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoPage(),
+                          settings: const RouteSettings(name: '/historico'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                ListTile(
+                  title: const Text('Histórico de Cotação'),
+                  onTap: () {
+                    if (ModalRoute.of(context)?.settings.name != '/historico_cotacao') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HistoricoCotacao(),
+                          settings: const RouteSettings(name: '/historico_cotacao'),
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                 ),
               ],
