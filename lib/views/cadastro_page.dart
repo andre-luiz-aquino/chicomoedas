@@ -15,6 +15,7 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final DatabaseUser dbHelper = DatabaseUser();
 
@@ -28,6 +29,10 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 
   void _salvarUsuario() async {
+    if (!_formKey.currentState!.validate()) {
+      return; // If the form is not valid, stop further execution.
+    }
+
     final nomeUsuario = _nomeUsuarioController.text;
     final nomeCompleto = _nomeCompletoController.text;
     final email = _emailController.text;
@@ -85,8 +90,7 @@ class _CadastroPageState extends State<CadastroPage> {
                 height: 33.sp,
                 fit: BoxFit.fill,
               ),
-              onPressed: null,
-              // _openDrawer,
+              onPressed: _openDrawer,
             ),
             title: Text(
               'Cadastro',
@@ -118,136 +122,151 @@ class _CadastroPageState extends State<CadastroPage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Card(
-                      color: const Color(0xFFD9D9D9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                      elevation: 4,
-                      margin: EdgeInsets.fromLTRB(25.w, 0.h, 25.w, 0.h),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 10.h),
-                            Text(
-                              "Nome do Usuário",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 50.h,
-                              child: TextFormField(
-                                controller: _nomeUsuarioController,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "Nome Completo",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 50.h,
-                              child: TextFormField(
-                                controller: _nomeCompletoController,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "E-mail",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 50.h,
-                              child: TextFormField(
-                                controller: _emailController,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "Senha",
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 50.h,
-                              child: TextFormField(
-                                controller: _senhaController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
-                            ElevatedButton(
-                              onPressed: _salvarUsuario,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF323232),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 100.w,
-                                  vertical: 10.h,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.r),
-                                ),
-                              ),
-                              child: Text(
-                                'Salvar',
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Card(
+                        color: const Color(0xFFD9D9D9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                        ),
+                        elevation: 4,
+                        margin: EdgeInsets.fromLTRB(25.w, 0.h, 25.w, 0.h),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10.h),
+                              Text(
+                                "Nome do Usuário",
                                 style: TextStyle(
-                                  fontSize: 20.sp,
-                                  color: Colors.white,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 50.h,
+                                child: TextFormField(
+                                  controller: _nomeUsuarioController,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              Text(
+                                "Nome Completo",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 50.h,
+                                child: TextFormField(
+                                  controller: _nomeCompletoController,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              Text(
+                                "E-mail",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                // height: 50.h,
+                                child: TextFormField(
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    hintText: 'Digite seu e-mail',
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor, insira um e-mail válido!';
+                                    }
+                                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                                    if (!emailRegex.hasMatch(value)) {
+                                      return 'Por favor, insira um e-mail válido';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              Text(
+                                "Senha",
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 50.h,
+                                child: TextFormField(
+                                  controller: _senhaController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(25.r),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20.h),
+                              ElevatedButton(
+                                onPressed: _salvarUsuario,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF323232),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 100.w,
+                                    vertical: 10.h,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25.r),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Salvar',
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

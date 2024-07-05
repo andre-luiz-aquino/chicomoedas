@@ -40,7 +40,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
 
     if (usuarioLogado != null) {
       setState(() {
-        _nomeUsuario = usuarioLogado.nomeUsuario;
+        _nomeUsuario = usuarioLogado.nomeCompleto;
       });
     }
   }
@@ -56,7 +56,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
-          (Route<dynamic> route) => false,
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -138,7 +138,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
                       },
                       child: ListTile(
                         title:
-                        Text('${item['valor']} BRL para ${item['moeda']}'),
+                            Text('${item['valor']} BRL para ${item['moeda']}'),
                         subtitle: Text(data),
                       ),
                     );
@@ -153,7 +153,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
               children: <Widget>[
                 DrawerHeader(
                   decoration: const BoxDecoration(
-                    color: Colors.blue,
+                    color: Color(0xFF323232),
                   ),
                   child: Text(
                     'Bem-vindo, $_nomeUsuario!',
@@ -173,7 +173,7 @@ class _HistoricoPageState extends State<HistoricoPage> {
                           builder: (context) => const ConversorPage(),
                           settings: const RouteSettings(name: '/'),
                         ),
-                            (Route<dynamic> route) => false,
+                        (Route<dynamic> route) => false,
                       );
                     } else {
                       Navigator.pop(context);
@@ -199,12 +199,14 @@ class _HistoricoPageState extends State<HistoricoPage> {
                 ListTile(
                   title: const Text('Histórico de Cotação'),
                   onTap: () {
-                    if (ModalRoute.of(context)?.settings.name != '/historico_cotacao') {
+                    if (ModalRoute.of(context)?.settings.name !=
+                        '/historico_cotacao') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const HistoricoCotacao(),
-                          settings: const RouteSettings(name: '/historico_cotacao'),
+                          settings:
+                              const RouteSettings(name: '/historico_cotacao'),
                         ),
                       );
                     } else {

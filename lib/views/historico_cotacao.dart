@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:chicomoedas/dataBase/usuario_db.dart';
+import 'package:chicomoedas/dto/usuario_dto.dart';
 import 'package:chicomoedas/views/conversor_page.dart';
 import 'package:chicomoedas/views/historico_page.dart';
+import 'package:chicomoedas/views/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -22,14 +25,28 @@ class CotacaoData {
 }
 
 class _HistoricoCotacaoState extends State<HistoricoCotacao> {
+  late Usuario usuarioLogado;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String _nomeUsuario = '';
 
   List<CotacaoData> _dolarValues = [];
 
   @override
   void initState() {
     super.initState();
+    _loadUsuario();
     _fetchAndSetCurrencyValues();
+  }
+
+  Future<void> _loadUsuario() async {
+    final dbHelper = DatabaseUser();
+    Usuario? usuarioLogado = await dbHelper.getLogado();
+
+    if (usuarioLogado != null) {
+      setState(() {
+        _nomeUsuario = usuarioLogado.nomeCompleto;
+      });
+    }
   }
 
   Future<void> _fetchAndSetCurrencyValues() async {
@@ -63,7 +80,17 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    // Implemente sua lógica de logout aqui, se necessário
+    final dbHelper = DatabaseUser();
+    usuarioLogado = (await dbHelper.getLogado())!;
+    if (usuarioLogado != null) {
+      await dbHelper.updateLogado(usuarioLogado.nomeUsuario, false);
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+          (Route<dynamic> route) => false,
+    );
   }
 
   List<CartesianSeries<CotacaoData, DateTime>> _createChartData() {
@@ -151,6 +178,18 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF323232),
+                  ),
+                  child: Text(
+                    'Bem-vindo, $_nomeUsuario!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.sp,
+                    ),
+                  ),
+                ),
                 ListTile(
                   title: const Text('Conversor'),
                   onTap: () {
