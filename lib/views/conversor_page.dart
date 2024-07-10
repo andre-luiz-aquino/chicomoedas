@@ -39,10 +39,23 @@ class _ConversorPageState extends State<ConversorPage> {
   bool _showAlertModal = false;
   double _alertValue = 0;
 
-  String _selectedCurrency = 'USD';
+  String _selectedCurrency1 = 'BRL';
+  String _selectedCurrency2 = 'USD';
   bool _isFetching = false;
 
-  final List<Map<String, String>> _currencies = [
+  final List<Map<String, String>> _currencies1 = [
+    {'code': 'BRL', 'name': 'Real', 'image': 'assets/br.png'},
+    {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
+    {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
+    {
+      'code': 'ARS',
+      'name': 'Pesos Argentinos',
+      'image': 'assets/argentina.jpeg'
+    }
+  ];
+
+  final List<Map<String, String>> _currencies2 = [
+    {'code': 'BRL', 'name': 'Real', 'image': 'assets/br.png'},
     {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
     {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
     {
@@ -60,11 +73,10 @@ class _ConversorPageState extends State<ConversorPage> {
     _loadUsuario();
     _startTimer();
     _getUsuarioLogado();
-
   }
 
   Future<void> _startBackgroundService() async {
-    await BackgroundService().start(_alertValue,usuarioLogado.email);
+    await BackgroundService().start(_alertValue, usuarioLogado.email);
   }
 
   Future<void> _loadUsuario() async {
@@ -88,8 +100,8 @@ class _ConversorPageState extends State<ConversorPage> {
       _isFetching = true;
     });
     try {
-      final rate =
-          await CurrencyConverter().getExchangeRate('BRL', _selectedCurrency);
+      final rate = await CurrencyConverter()
+          .getExchangeRate(_selectedCurrency1, _selectedCurrency2);
       setState(() {
         _exchangeRate = rate;
       });
@@ -115,7 +127,7 @@ class _ConversorPageState extends State<ConversorPage> {
         _convertedValue = value * _exchangeRate!;
       });
 
-      dbHelper.insertHistorico(value, _selectedCurrency);
+      dbHelper.insertHistorico(value, _selectedCurrency2);
     }
   }
 
@@ -163,12 +175,11 @@ class _ConversorPageState extends State<ConversorPage> {
       if (_cotaAtual != null && _cotaAtual! == _alertValue && !_emailSent) {
         _sendEmail();
         _emailSent = true;
-        timer.cancel(); // Cancela o timer de 1 minuto
+        timer.cancel();
 
         // Inicia o timer de 10 minutos
         _timer = Timer.periodic(interval10Minutes, (timer) {
-          _timer
-              ?.cancel(); // Cancela o timer de 10 minutos antes de iniciar um novo
+          _timer?.cancel();
 
           // Inicia novamente o timer de 1 minuto
           _startTimer();
@@ -261,9 +272,9 @@ class _ConversorPageState extends State<ConversorPage> {
   Future<void> _logout(BuildContext context) async {
     final dbHelper = DatabaseUser();
     usuarioLogado = (await dbHelper.getLogado())!;
-    if (usuarioLogado != null) {
+
       await dbHelper.updateLogado(usuarioLogado.nomeUsuario, false);
-    }
+
 
     Navigator.pushAndRemoveUntil(
       context,
@@ -423,18 +434,56 @@ class _ConversorPageState extends State<ConversorPage> {
                   ),
                 ),
                 Positioned(
-                  top: 190.h,
+                  top: 200.h,
                   left: 10.w,
                   child: Container(
-                    width: 60.w,
+                    width: 55.w,
                     height: 60.h,
-                    padding: EdgeInsets.all(2.5.w),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: CircleAvatar(
-                      radius: 40.r,
-                      backgroundImage: const AssetImage("assets/br.png"),
+                    child: DropdownButton<String>(
+                      value: _selectedCurrency1,
+                      icon:
+                          const Icon(Icons.arrow_downward, color: Colors.white),
+                      iconSize: 0,
+                      elevation: 16,
+                      dropdownColor: Colors.transparent,
+                      onChanged: (String? newValue1) async {
+                        setState(() {
+                          _selectedCurrency1 = newValue1!;
+                        });
+
+                        if (_selectedCurrency1 == _selectedCurrency2) {
+                          _selectedCurrency2 = _currencies2.firstWhere(
+                              (currency) =>
+                                  currency['code'] !=
+                                  _selectedCurrency1)['code']!;
+                          setState(() {
+                            _selectedCurrency2 = _selectedCurrency2;
+                          });
+                        }
+
+                        _calcularConversao();
+                      },
+                      items: _currencies1.map<DropdownMenuItem<String>>(
+                        (Map<String, String> currency1) {
+                          return DropdownMenuItem<String>(
+                            value: currency1['code'],
+                            child: Row(
+                              children: [
+                                ClipOval(
+                                  child: Image.asset(
+                                    currency1['image']!,
+                                    width: 50.w,
+                                    height: 50.h,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ).toList(),
                     ),
                   ),
                 ),
@@ -451,7 +500,8 @@ class _ConversorPageState extends State<ConversorPage> {
                     ),
                     child: Center(
                       child: Text(
-                        'BRL',
+                        _currencies1.firstWhere((currency) =>
+                            currency['code'] == _selectedCurrency1)['code']!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14.sp,
@@ -462,39 +512,49 @@ class _ConversorPageState extends State<ConversorPage> {
                   ),
                 ),
                 Positioned(
-                  top: 365.h,
+                  top: 380.h,
                   left: 10.w,
                   child: Container(
-                    width: 80.w,
-                    height: 80.h,
+                    width: 55.w,
+                    height: 60.h,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedCurrency,
-                        icon:
-                            const Icon(Icons.arrow_downward, color: Colors.red),
-                        iconSize: 0,
-                        elevation: 16,
-                        dropdownColor: Colors.transparent,
-                        onChanged: (String? newValue) async {
+                    child: DropdownButton<String>(
+                      value: _selectedCurrency2,
+                      icon:
+                          const Icon(Icons.arrow_downward, color: Colors.white),
+                      iconSize: 0,
+                      elevation: 16,
+                      dropdownColor: Colors.transparent,
+                      onChanged: (String? newValue2) async {
+                        setState(() {
+                          _selectedCurrency2 = newValue2!;
+                        });
+
+                        // Verifica se o valor selecionado em _selectedCurrency2 é igual ao valor atual de _selectedCurrency1
+                        if (_selectedCurrency2 == _selectedCurrency1) {
+                          // Escolhe automaticamente um valor diferente para _selectedCurrency1
+                          _selectedCurrency1 = _currencies1.firstWhere(
+                              (currency) =>
+                                  currency['code'] !=
+                                  _selectedCurrency2)['code']!;
                           setState(() {
-                            _selectedCurrency = newValue!;
-                            _exchangeRate = null;
-                            _convertedValue = null;
+                            _selectedCurrency1 = _selectedCurrency1;
                           });
-                          _calcularConversao();
-                        },
-                        items: _currencies.map<DropdownMenuItem<String>>(
-                            (Map<String, String> currency) {
+                        }
+
+                        _calcularConversao();
+                      },
+                      items: _currencies2.map<DropdownMenuItem<String>>(
+                        (Map<String, String> currency2) {
                           return DropdownMenuItem<String>(
-                            value: currency['code'],
+                            value: currency2['code'],
                             child: Row(
                               children: [
                                 ClipOval(
                                   child: Image.asset(
-                                    currency['image']!,
+                                    currency2['image']!,
                                     width: 50.w,
                                     height: 50.h,
                                   ),
@@ -502,8 +562,8 @@ class _ConversorPageState extends State<ConversorPage> {
                               ],
                             ),
                           );
-                        }).toList(),
-                      ),
+                        },
+                      ).toList(),
                     ),
                   ),
                 ),
@@ -520,8 +580,8 @@ class _ConversorPageState extends State<ConversorPage> {
                     ),
                     child: Center(
                       child: Text(
-                        _currencies.firstWhere((currency) =>
-                            currency['code'] == _selectedCurrency)['code']!,
+                        _currencies2.firstWhere((currency) =>
+                            currency['code'] == _selectedCurrency2)['code']!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14.sp,
