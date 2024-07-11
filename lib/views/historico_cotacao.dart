@@ -39,7 +39,7 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   Moeda _moedaSelecionada = moedas[0];
   static List<Moeda> moedas = [
     Moeda('Dólar', 'assets/usa.png'),
-    Moeda('Libra', 'assets/euro.jpeg'),
+    Moeda('Libra', 'assets/libra.jpeg'),
     Moeda('Pesos', 'assets/argentina.jpeg'),
   ];
 

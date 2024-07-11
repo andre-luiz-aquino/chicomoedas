@@ -46,7 +46,7 @@ class _ConversorPageState extends State<ConversorPage> {
   final List<Map<String, String>> _currencies1 = [
     {'code': 'BRL', 'name': 'Real', 'image': 'assets/br.png'},
     {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
-    {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
+    {'code': 'GBP', 'name': 'Libra Esterlina', 'image': 'assets/libra.jpeg'},
     {
       'code': 'ARS',
       'name': 'Pesos Argentinos',
@@ -57,7 +57,7 @@ class _ConversorPageState extends State<ConversorPage> {
   final List<Map<String, String>> _currencies2 = [
     {'code': 'BRL', 'name': 'Real', 'image': 'assets/br.png'},
     {'code': 'USD', 'name': 'Dólar Americano', 'image': 'assets/usa.png'},
-    {'code': 'AUD', 'name': 'Dólar Australiano', 'image': 'assets/aud.jpeg'},
+    {'code': 'GBP', 'name': 'Libra Esterlina', 'image': 'assets/libra.jpeg'},
     {
       'code': 'ARS',
       'name': 'Pesos Argentinos',
