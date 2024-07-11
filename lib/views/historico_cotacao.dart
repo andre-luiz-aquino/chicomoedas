@@ -39,7 +39,7 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
   Moeda _moedaSelecionada = moedas[0];
   static List<Moeda> moedas = [
     Moeda('Dólar', 'assets/usa.png'),
-    Moeda('Euro', 'assets/aud.jpeg'),
+    Moeda('Libra', 'assets/euro.jpeg'),
     Moeda('Pesos', 'assets/argentina.jpeg'),
   ];
 
@@ -124,7 +124,7 @@ class _HistoricoCotacaoState extends State<HistoricoCotacao> {
         dataSource = _dolarValues;
         color = Colors.blue;
         break;
-      case 'Euro':
+      case 'Libra':
         dataSource = _euroValues;
         color = Colors.red;
         break;
